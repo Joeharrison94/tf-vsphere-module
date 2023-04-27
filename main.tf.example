@@ -1,0 +1,78 @@
+## Main Terraform file to call the DESIRED module and execute with custom parameters
+## Author Joe Harrison
+
+## Defines variables to be populated by GitHub Secrets at runtime
+variable "vsphere_password" {}
+variable "deployment_password" {}
+
+# Defines the required version of Terraform and the required vSphere provider version
+terraform {
+  required_version = ">= 1.4.5"
+  
+  required_providers {
+    vsphere = {
+      source = "hashicorp/vsphere"
+      version = "2.3.1"
+    }
+  }
+  backend "s3" {
+  }
+}
+
+# Defines the vSphere provider and specify the vSphere login credentials and server details
+provider "vsphere" {
+  user           = "USERNAME_HERE"
+  password = var.vsphere_password
+  vsphere_server = "SERVER_IP_HERE"
+  allow_unverified_ssl = true
+}
+
+# Defines the module source and its location
+module "vsphere-ubnt" {
+  source = "./modules/vsphere-ubuntu-22.04.2-terraform"
+
+  # Defines vSphere information
+  vsphere_server = "USERNAME_HERE"
+  vsphere_datacenter = "DATACENTER_HERE"
+  vsphere_cluster = "CLUSTER_NAME_HERE"
+  vsphere_datasource = "DATASTORE_NAME_HERE"
+  vsphere_network = "PORT_GROUP_NAME_HERE"
+
+  # Defines OS template information
+  vsphere_template = "TEMPLATE_NAME_HERE"
+  deployment_user = "administrator"
+  deployment_password = var.deployment_password
+  
+  # Defines VM deployment information
+  deployment_name = "VM_HOSTNAME_HERE"
+  deployment_vm_folder = "FOLDER/TO/DEPLOY/TO"
+  deployment_domain = "DEPLOYMENT_LOCAL_DOMAIN_HERE"
+  deployment_cpu = "NUMBER_OF_CPUS_HERE"
+  deployment_ram_mb = "RAM_IN_MB_HERE"
+  
+  # Defines additional disks for the VM
+  # id start at 1 always, dev, start with sdb always, lvm is 0 for false 1 for true, size is size of drive in GB, dir is the mount location in the VM 
+  deployment_additional_disks = [
+  {
+    id      = 1
+    dev     = "sdb"
+    lvm     = 0
+    sizeGB  = 200
+    dir     = "/path/to/mount/point"
+  }#,
+  #{
+  #  id      = 2
+  #  dev     = "sdc"
+  #  lvm     = 0
+  #  sizeGB  = 200
+  #  dir     = "/path/to/mount/point/2"
+  #}
+]
+  
+  # Defines networking information for the VM
+  deployment_ip = "IP_ADDRESS_HERE"
+  deployment_subnet = "CIDR_NOTATION_HERE"
+  deployment_gateway = "GATEWAY_HERE"
+  dns_server_list = [ "DNS_SERVER_HERE" ]
+  dns_suffix_list = [ "" ]
+}
