@@ -15,7 +15,7 @@ Before proceeding, ensure that you have the following actions completed:
 Open the main.tf.example file located in the root directory of the repository and modify the values for the variables as per your requirements. These variables are used to configure the Virtual Machine that will be deployed. Once you have finalised your changes rename the file to main.tf and push your changes to your repo. this will trigger the GitHub action and build it.
 
 ## Values to modify
-### Key / Value Table example for a CS deployment
+### Key / Value Table example for a deployment
 ### DO NOT CHANGE ANY VALUES NOT LISTED IN THE TABLE BELOW
 | Variable | Description | Example |
 |----------|-------------|-------------|
